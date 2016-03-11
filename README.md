@@ -3,8 +3,11 @@ Final project for Data Mining Spring 2016
 
 ##Members:
 Bryan Connelly
+
 Phu Dang
+
 James Huynh
+
 Ming Liew
 
 ##Introduction to Consumer Complaints Analysis:
