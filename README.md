@@ -12,5 +12,7 @@ Customer complaints analysis is the new and big research area in many companies 
 
 ##Introduction to Open Data Sources:
 ![alt text](http://static1.squarespace.com/static/51b36f27e4b08305624e27c9/52504279e4b00c64c3d0c68e/52504289e4b04b668eadae77/1380991626399/CFPB.jpg "Logo Title Text 1")
+
+
 Our datasets comes from the Consumer Financial Protection Bureau [2]. The data attributes that can be found in this data set includes the the types of complaints (credit card, debit card, money transfer, and etc), issues of the complaints, sub-issue (identity theft, dispute, etc.), location and date of complaints, the company who received the complaint, the company response and if the complaints were made public are also documented. The Consumer Complaint Database is collected from 524,829 complaints, on a range of consumer financial products and services, sent to nearly 3,000 companies for response. Consumer Financial Protection Bureau doesn’t verify all the facts alleged in these complaints, but they take some special steps to confirm a commercial relationship between the consumer and the company. The database contains consumer complaints from **July 2011** until **March 27, 2016**.
 
