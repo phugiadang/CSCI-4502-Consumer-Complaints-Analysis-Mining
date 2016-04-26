@@ -24,8 +24,8 @@ Files:
 - AnnualPopulation.csv
 	- state-specific annual population estimates used in regression
 
-- Consumer_Complaints.csv
-	- over 500,000 complaints used in every piece of analysis that we did, including this linear regression analysis of complaints vs population
+- Consumer_Complaints.csv.tag.gz
+	- over 500,000 complaints used in every piece of analysis that we did, including this linear regression analysis of complaints vs population. Unzip for the scripts to read the file correctly.
 
 - Monthly_Pop.csv
 	- national, monthly population estimates
