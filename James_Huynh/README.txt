@@ -1,4 +1,4 @@
-README: File explaining the files submitted for answering the frequent set
+README: File explaining the files submitted for answering the frequent types
         of States Complaint from the consumer database. 
 
 Source Code.txt - R software code used to data mined the consumer complaints data.
