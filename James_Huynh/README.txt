@@ -1,8 +1,5 @@
 README: File explaining the files submitted for answering the frequent set
-        of States Complaint from the consumer database. Other team members
-        are Phu Dang, Ming Liew, and Bryan Connelly. Each members are
-        working on seprate questions and each have their own uploads.
-
+        of States Complaint from the consumer database. 
 
 Source Code.txt - R software code used to data mined the consumer complaints data.
 		  Code can be copy and pasted into R terminal and run after the 
