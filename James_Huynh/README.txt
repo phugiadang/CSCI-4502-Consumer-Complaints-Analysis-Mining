@@ -9,6 +9,6 @@ Source Code.txt - R software code used to data mined the consumer complaints dat
 				  
 Data Graph.pdf - Shows key results of data with scatter plots. 
 		 Plots are frequent set found using the apriori
-		 algorithm. Graph was broken down by years and 
+		 algorithm. Graphs were broken down by years and 
 		 than later with all five years.
 			  
