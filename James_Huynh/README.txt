@@ -12,3 +12,4 @@ Data Graph.pdf - Shows key results of data with scatter plots.
 		 algorithm. Graphs were broken down by years and 
 		 than later with all five years.
 			  
+State(11-15).csv - result of processed data using R apriori algorithm.
