@@ -3,9 +3,6 @@ import csv
 import matplotlib.pyplot as plt
 import scipy
 from scipy import stats
-from scipy.interpolate import UnivariateSpline
-from scipy.interpolate import InterpolatedUnivariateSpline
-from scipy.interpolate import interp1d
 from sklearn.metrics import r2_score
 import numpy as np
 import sys
@@ -15,9 +12,9 @@ from collections import OrderedDict
 from operator import itemgetter
 from sklearn.linear_model import LinearRegression
 import pandas as pd
-import statsmodels.api as sm 
 import itertools
 from scipy.optimize import curve_fit
+
 
 def rmse(p,x,y):
     yfit = np.polyval(p,x)
@@ -59,6 +56,7 @@ class Interpolation:
                     break
                 ctr = ctr + 1
             self.complaint_allstate.update({key: dict(tem)})
+        
         for value,key in zip(stategdp.values(),stategdp.keys()):
             tem = []
             ctr = 1
@@ -66,8 +64,6 @@ class Interpolation:
                 tem.append((ctr,int(v)))
                 ctr = ctr + 1
             self.gdp.update({key: dict(tem)})
-        self.ax = []
-        self.ay = []
 
     def lagrange(self):
         '''Lagrange Interpolation. Unsuccessful because it's a linear equation, so doesn't
@@ -132,22 +128,27 @@ class Interpolation:
         keys_b = set(self.complaint_allstate.keys())
         intersection = keys_a & keys_b
         corr_dict = {}
-        ax = []
+        ax= []
         ay = []
         for v in intersection:
-            y = np.array(self.gdp[v].values())
-            x = np.array(self.complaint_allstate[v].values())
+            y = self.gdp[v].values()
+            x = self.complaint_allstate[v].values()
+            ax.append(x)
+            ay.append(y)
+            '''
             if(len(x) != len(y)):
                 continue
             else:
-                ax.append(self.complaint_allstate[v].values())
-                ay.append(self.gdp[v].values())
-                corr_dict.update({v:np.corrcoef(x,y)[0,1]})
-        self.ax = flatten(ax)
-        self.ay = flatten(ay)
-        print "Nation Wide: %f"%np.corrcoef(flatten(ax),flatten(ay))[0,1]
+                corr_dict.update({v:np.corrcoef(x,y)[0,1]})'''
+        if len(ax) != len(ay):
+            if(len(ax)> len(ay)):
+                ay = ay[:len(ax)]
+            else:
+                ax = ax[:len(ay)]
+        print len(flatten(ax)),len(flatten(ay))
+        print np.corrcoef(flatten(ax)[:735],flatten(ay))[0,1]
         corrdict = OrderedDict(sorted(corr_dict.items(), key=itemgetter(1)))
-        print corrdict
+        #print corrdict
 
         '''
     def simplePredict(self):
@@ -185,22 +186,22 @@ class Interpolation:
         keys_b = set(self.complaint_allstate.keys())
         intersection = keys_a & keys_b
         #intersection = ['FL','TX','NY','PA','CA','GA']
-        a = np.array([])
-        aleft = np.array([])
-        b = np.array([])
-        bleft = np.array([])
-        intersection = ['US']
+        rsquared = {}
+        rms = {'AK': [] }
+        nationx = []
+        nationxleft = []
+        nationy = []
+        nationyleft = []
         for v in intersection:
+            y = np.array(self.gdp[v].values()[:12])
+            yleft = np.array(self.gdp[v].values()[12:])
+            x = np.array(self.complaint_allstate[v].values()[:12])
+            xleft = np.array(self.complaint_allstate[v].values()[12:])
+            nationx.append(self.gdp[v].values()[:12])
+            nationxleft.append(self.gdp[v].values()[12:])
+            nationy.append(self.complaint_allstate[v].values()[:12])
+            nationyleft.append(self.complaint_allstate[v].values()[12:])
             '''
-            y = np.array(self.gdp[v].values())[:12]
-            yleft = np.array(self.gdp[v].values())[12:]
-            x = np.array(self.complaint_allstate[v].values())[:12]
-            xleft = np.array(self.complaint_allstate[v].values())[12:]
-            '''
-            y = np.array(self.ay)[:600]
-            yleft = np.array(self.ay)[600:]
-            x = np.array(self.ax)[:600]
-            xleft = np.array(self.ax)[600:]
             if(len(x) != len(y)):
                 continue
             else:
@@ -213,13 +214,13 @@ class Interpolation:
                     train_err[i] = rmse(p,x,y)
                     test_err[i] = rmse(p,xleft,yleft)
                 print "RMSE: lowest: %f ;highest: %f; proportion: %f"%(test_err.min(),test_err.max(),test_err.min()/test_err.max())
+                if v == 'AK':
+                    rms['AK'] = test_err
                 degree = np.argmin(test_err)
-                print degree
-                plt.title( "(  %s  )in %d th order regression"%(v,3))
-                xp = np.linspace(x.min()-1000, x.max()+1000,10000)
+                plt.title( "(  %s  )in %d th order regression"%(v,degree))
+                #xp = np.linspace(x.min()-1000, x.max()+1000,10000)
                 coeff = np.polyfit(x,y,degree)
 
-                f = np.polyval(coeff,xp)
                 temp= []
                 occurance = []
                 for index,element in enumerate(xp):
@@ -227,59 +228,91 @@ class Interpolation:
                     if i in xleft and i not in occurance:
                         occurance.append(i)
                         temp.append(index)
-
+                f = np.polyval(coeff,xp)
                 temp = np.unique(temp)
                 a = [ f[i]for i in temp]
-                print len(a),len(yleft)
-                e = yleft[:127]
+                e = yleft
                 if not a or len(a)!=len(e):
                     print 0
                 else:
                     slope, intercept, r_value, p_value, std_err =stats.linregress(a,e)
-                    print r_value**2
-                plt.scatter(x,y,c="green")
+                    rsquared.update({v:r_value**2})
+                    print "%s 's R-Squared : %f"%(v,r_value**2)
+                plt.scatter(x,y,c="blue")
                 plt.xlabel("Complaints Amount")
                 plt.ylabel("State GDP")
-                plt.scatter(xleft,yleft,c="red")
+                plt.scatter(xleft,yleft,c="yellow")
                 plt.axis([x.min()+10,xleft.max()+10,y.min()+10,yleft.max()+100])
-                plt.plot(xp,f,'blue')
-                plt.savefig("(  %s  )Extrapolation with %d th Order Regression Model"%(v,degree)+".jpg")
-                plt.show()
-
-                '''
-                fig,ax = plt.subplots()
-                ax.plot(ds,test_err,lw=2,label='test error')
-                ax.plot(ds,train_err,lw=2,label='training error')
-                ax.legend(loc=0)
-                ax.set_xlabel('degree of fit')
-                ax.set_ylabel('rms error')
-                plt.title( "(  %s  )RMSE vs Degree of Fit"%v )
-                plt.savefig("(  %s  )RMS Error vs Degree of Curve Fit"%v+".jpg")'''
-                
-                #plot_learning_curve(d=3,x=x,xleft=xleft,y=y,yleft=yleft)
-
-
-                '''
-                temp = []
-                for index,element in enumerate(xp):
-                    if round(element,0) in xleft:
-                        temp.append(index)
-                mean = []
-                for i in temp:
-                    mean.append(f[i])
-                print mean
-                print scipy.stats.pearsonr(xleft, mean)
-                '''
-                '''
-                xp = sm.add_constant(x)
-                model = sm.OLS(y,xp)
-                result = model.fit()
-
-                print result.summary()
-                print stats.linregress(xleft,yleft)
-                print "std is %f"%result.rsquared '''
-                #plt.savefig("(  %s  )Extrapolation with scipy.interpolate.UnivariateSpline"%v+".jpg")
+                plt.plot(xp,f,'red')
+                #plt.savefig("(  %s  )Extrapolation with %d th Order Regression Model"%(v,degree)+".jpg")
                 #plt.show()
+                '''
+        ds = np.arange(17)
+        x = flatten(nationx)
+        y = flatten(nationy)[:588]
+        xleft = flatten(nationxleft)
+        yleft = flatten(nationyleft)[:147]
+        train_err = np.zeros(len(ds))
+        test_err = np.zeros(len(ds))
+
+        for i,d in enumerate(ds):
+            p = np.polyfit(x,y,d)
+            train_err[i] = rmse(p,x,y)
+            test_err[i] = rmse(p,xleft,yleft)
+        print "RMSE: lowest: %f ;highest: %f; proportion: %f"%(min(test_err),max(test_err),min(test_err)/max(test_err))
+        degree = np.argmin(test_err)
+        plt.title( "Nationwide's  %d th order regression"%(degree))
+        xp = np.linspace(min(x), max(x),90000000)
+        coeff = np.polyfit(x,y,degree)
+        temp= []
+        occurance = []
+        for index,element in enumerate(xp):
+            i = round(element,0)
+            if i in xleft and i not in occurance:
+                occurance.append(i)
+                temp.append(index)
+        f = np.polyval(coeff,xp)
+        temp = np.unique(temp)
+        a = [ f[i]for i in temp]
+        e = yleft
+        print len(a),len(e)
+        e = e[:len(a)]
+        if not a or len(a)!=len(e):
+            print 0
+        else:
+            slope, intercept, r_value, p_value, std_err =stats.linregress(a,e)
+            rsquared.update({v:r_value**2})
+            print "%s 's R-Squared : %f"%(v,r_value**2)
+        plt.scatter(x,y,c="blue")
+        plt.xlabel("Nation Wide Complaints Amount")
+        plt.ylabel("Nation Wide GDP")
+        plt.scatter(xleft,yleft,c="yellow")
+        plt.axis([min(x)+10,max(xleft)+10,min(y)+10,max(yleft)+100])
+        plt.plot(xp,f,'red')
+        plt.savefig("NationWide Regreesion Graph")
+        plt.show()
+        '''print rms['AK']
+        rsquared = OrderedDict(sorted(rsquared.items(), key=itemgetter(1)))
+        #print rsquared
+        del rsquared['AL']
+        del rsquared['IL']
+        del rsquared['SC']
+        del rsquared['MN']
+        x = list(range(0,len( rsquared.keys())))
+        y = rsquared.values()
+        fig, ax = plt.subplots()
+        labels = rsquared.keys()
+        plt.title("NationWide R-Squared")
+        plt.xlabel("R-Squared")
+        plt.ylabel("States")
+        ax.bar(x,y,align="center")
+        ax.set_xticks(x)
+        ax.set_xticklabels(labels,rotation=90)
+        plt.savefig("NationWide R-Squared.jpg")
+        plt.show()'''
+
+
+
 def getStatePop():
     statedict = {}
     csvfile = open("AnnualPopulation.csv","r+")
@@ -294,7 +327,6 @@ def getStatePop():
     csvfile.close()
     for key in statedict.keys():
         statedict[key] = np.diff(statedict[key]) / statedict[key][:4]
-    print statedict
     return statedict
 def getStateCC():
     statearray = {}
@@ -308,7 +340,7 @@ def getStateCC():
     del statedict['US']
     for row in spamreader:
         for x,y in zip(row[1:len(row)],sorted(statedict.keys())):
-            statedict[y].append(x)
+            statedict[y].append(int(x))
     csvfile.close()
     return statedict
 
@@ -322,10 +354,9 @@ def getStategdp():
         break
     for row in spamreader:
         for x,y in zip(row[1:len(row)],sorted(statedict.keys())):
-            statedict[y].append(x)
+            statedict[y].append(int(x))
     csvfile.close()
     return statedict
-
 
 def main():
     cc = getStateCC()
@@ -333,10 +364,8 @@ def main():
     pop = getStatePop()
     state = Interpolation(cc,gdp,pop)
     #state.linearRegression()
-    #state.correlation()
+    state.correlation()
     #state.extrapolator()
-
-
 
 if __name__ == "__main__":
     main()
