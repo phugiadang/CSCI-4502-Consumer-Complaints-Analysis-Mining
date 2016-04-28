@@ -1,0 +1,135 @@
+####################################################################################
+R code to get the frequent set of California
+#####################################################################################
+install.packages("xlsx")
+install.packages("arules")
+install.packages("arulesViz")
+
+library(arules)
+library(arulesViz)
+library(xlsx)
+data1 <- read.csv(file.choose(), header=T)
+rules = apriori(data1)
+rules <- apriori(data1,
+parameter = list(minlen=2, supp=0.001, conf=0.1), appearance = list(rhs=c("State=CA"), default="lhs"),
+control = list(verbose=F))
+rules.sorted <- sort(rules, by="support")
+inspect(rules.sorted)
+write.csv(as(rules.sorted, "data.frame"),file='CA.csv')
+# code to plot association rules graph #
+plot(rules.sorted)
+
+####################################################################################
+R code to get the frequent set of Florida
+#####################################################################################
+install.packages("xlsx")
+install.packages("arules")
+install.packages("arulesViz")
+
+library(arules)
+library(arulesViz)
+library(xlsx)
+data1 <- read.csv(file.choose(), header=T)
+rules = apriori(data1)
+rules <- apriori(data1,
+parameter = list(minlen=2, supp=0.001, conf=0.1), appearance = list(rhs=c("State=FL"), default="lhs"),
+control = list(verbose=F))
+rules.sorted <- sort(rules, by="support")
+inspect(rules.sorted)
+write.csv(as(rules.sorted, "data.frame"),file='FL.csv')
+# code to plot association rules graph #
+plot(rules.sorted)
+
+
+####################################################################################
+R code to get the frequent set of Texas
+#####################################################################################
+
+install.packages("xlsx")
+install.packages("arules")
+install.packages("arulesViz")
+
+library(arules)
+library(arulesViz)
+library(xlsx)
+data1 <- read.csv(file.choose(), header=T)
+rules = apriori(data1)
+rules <- apriori(data1,
+parameter = list(minlen=2, supp=0.001, conf=0.1), appearance = list(rhs=c("State=TX"), default="lhs"),
+control = list(verbose=F))
+rules.sorted <- sort(rules, by="support")
+inspect(rules.sorted)
+write.csv(as(rules.sorted, "data.frame"),file='TX.csv')
+# code to plot association rules graph #
+plot(rules.sorted)
+
+
+####################################################################################
+R code to get the frequent set of New York
+#####################################################################################
+
+install.packages("xlsx")
+install.packages("arules")
+install.packages("arulesViz")
+
+library(arules)
+library(arulesViz)
+library(xlsx)
+data1 <- read.csv(file.choose(), header=T)
+rules = apriori(data1)
+rules <- apriori(data1,
+parameter = list(minlen=2, supp=0.001, conf=0.1), appearance = list(rhs=c("State=NY"), default="lhs"),
+control = list(verbose=F))
+rules.sorted <- sort(rules, by="support")
+inspect(rules.sorted)
+write.csv(as(rules.sorted, "data.frame"),file='NY.csv')
+# code to plot association rules graph #
+plot(rules.sorted)
+
+####################################################################################
+R code to get the frequent set of Georgia
+#####################################################################################
+
+install.packages("xlsx")
+install.packages("arules")
+install.packages("arulesViz")
+
+library(arules)
+library(arulesViz)
+library(xlsx)
+data1 <- read.csv(file.choose(), header=T)
+rules = apriori(data1)
+rules <- apriori(data1,
+parameter = list(minlen=2, supp=0.001, conf=0.1), appearance = list(rhs=c("State=GA"), default="lhs"),
+control = list(verbose=F))
+rules.sorted <- sort(rules, by="support")
+inspect(rules.sorted)
+write.csv(as(rules.sorted, "data.frame"),file='GA.csv')
+# code to plot association rules graph #
+plot(rules.sorted)
+
+####################################################################################
+R code to get the frequent set of the Top 5 states
+#####################################################################################
+install.packages("xlsx")
+install.packages("arules")
+install.packages("arulesViz")
+
+library(arules)
+library(arulesViz)
+library(xlsx)
+data1 <- read.csv(file.choose(), header=T)
+itemsets  = apriori(data1)
+rules <- apriori(data1,
+parameter = list(minlen=2, supp=0.001, conf=0.1), appearance = list(rhs=c("State=CA", "State=FL", "State=TX", "State=NY", "State=GA"), default="lhs"),
+control = list(verbose=F))
+rules.sorted <- sort(rules, by="support")
+inspect(rules.sorted)
+write.csv(as(rules.sorted, "data.frame"),file='States16.csv')
+
+# code to plot association rules graph #
+plot(rules.sorted)
+
+
+
+
